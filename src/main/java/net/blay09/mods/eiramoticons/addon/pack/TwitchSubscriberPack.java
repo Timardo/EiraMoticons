@@ -51,11 +51,15 @@ public class TwitchSubscriberPack implements IEmoticonLoader {
 			}
 			if (emoteList != null) {
                 for (Map.Entry<String, JsonElement> entry : emoteList.entrySet()) {
+                	JsonObject emoticonEntry = entry.getValue().getAsJsonObject();
+                	JsonElement channelNameElement = emoticonEntry.get("channel_name");
+                	if (channelNameElement.isJsonNull()) {
+                		continue;
+                	}
                     String code = entry.getValue().getAsJsonObject().get("code").getAsString();
                     matcher.reset(code);
                     if (matcher.matches()) {
                     	IEmoticon emoticon = EiraMoticonsAPI.registerEmoticon(code, this);
-                    	JsonObject emoticonEntry = entry.getValue().getAsJsonObject();
                     	emoticon.setLoadData(entry.getValue().getAsJsonObject().get("id").getAsInt());
                     	String channelName = emoticonEntry.get("channel_name").getAsString();
                     	emoticon.setTooltip(I18n.format("eiramoticons:group.twitch.subscriber", channelName));
